@@ -65,6 +65,16 @@ namespace AStarTesting.NaiveAStar
 		/// <summary>
 		/// 
 		/// </summary>
+		bool mKeypressAdvance;
+		public bool KeypressAdvance
+		{
+			get { return mKeypressAdvance; }
+			set { mKeypressAdvance = value; }
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
 		long mMaxOpenSetCount;
 		public long MaxOpenSetCount
 		{
@@ -158,11 +168,41 @@ namespace AStarTesting.NaiveAStar
 		/// <summary>
 		/// 
 		/// </summary>
+		Stopwatch mSWClosedSet;
+		public Stopwatch SWClosedSet
+		{
+			get { return mSWClosedSet; }
+			set { mSWClosedSet = value; }
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
 		Stopwatch mSWFindMin;
 		public Stopwatch SWFindMin
 		{
 			get { return mSWFindMin; }
 			set { mSWFindMin = value; }
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		Stopwatch mSWNodes;
+		public Stopwatch SWNodes
+		{
+			get { return mSWNodes; }
+			set { mSWNodes = value; }
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		Stopwatch mSWOpenSet;
+		public Stopwatch SWOpenSet
+		{
+			get { return mSWOpenSet; }
+			set { mSWOpenSet = value; }
 		}
 
 		/// <summary>
@@ -220,16 +260,22 @@ namespace AStarTesting.NaiveAStar
 		/// </summary>
 		void ResetBenchmark()
 		{
-			SWTotal.Reset();
-			SWSetup.Reset();
-			SWBody.Reset();
-			SWFindMin.Reset();
-			SWBacktrace.Reset();
-			NodesConsideredCount = 0;
 			MaxOpenSetCount = 0;
+			NodesConsideredCount = 0;
 			PathLength = 0;
+			SWBacktrace.Reset();
+			SWBody.Reset();
+			SWClosedSet.Reset();
+			SWFindMin.Reset();
+			SWNodes.Reset();
+			SWOpenSet.Reset();
+			SWSetup.Reset();
+			SWTotal.Reset();
 		}
 
+		/// <summary>
+		/// Solves for the first identified A* path from the StartNode to the GoalNode.
+		/// </summary>
 		public void Solve()
 		{
 			// Zero the benchmark variables
@@ -237,11 +283,23 @@ namespace AStarTesting.NaiveAStar
 
 			SWTotal.Start();
 			SWSetup.Start();
-			
-			// Clear the node lists from last time
+			SWClosedSet.Start();
+
+			// Clear the closed set
 			ClosedSet.Clear();
+
+			SWClosedSet.Stop();
+			SWOpenSet.Start();
+
+			// Clear the open set
 			OpenSet.Clear();
+
+			SWOpenSet.Stop();
+
+			// Clear the path
 			Path.Clear();
+
+			SWNodes.Start();
 
 			// Set the current node being considered
 			NaiveAStarNode currentNode = StartNode;
@@ -249,20 +307,35 @@ namespace AStarTesting.NaiveAStar
 			currentNode.CostFromStart = 0;
 			currentNode.CostToGoal = 0;
 			currentNode.CostTotal = 0;
-			
+
+			SWNodes.Stop();
+			SWClosedSet.Start();
+
 			// Closed list of nodes to not be reconsidered
 			mClosedSet.Add( currentNode );
+
+			SWClosedSet.Stop();
 		
 			// Open list of nodes to consider and the node's parent (for backtracing)
 			foreach ( NaiveAStarNode node in currentNode.Neighbors )
 			{
 				if ( node.Traversable )
 				{
+					SWOpenSet.Start();
+
+					// Add the node to the open set
 					mOpenSet.Add( node );
+
+					SWOpenSet.Stop();
+					SWNodes.Start();
+
+					// Calculate its cost and set its parent to the current node
 					node.Parent = currentNode;
 					node.CostFromStart = GetCostFromStart( node );
 					node.CostToGoal = GetCostToGoal( node );
 					node.CostTotal = node.CostFromStart + node.CostToGoal;
+
+					SWNodes.Stop();
 				}
 
 				NodesConsideredCount++;
@@ -271,19 +344,21 @@ namespace AStarTesting.NaiveAStar
 			SWSetup.Stop();
 			SWBody.Start();
 
-#if ( ASTAR_DEBUG && ASTAR_KEY_STEPPING )
-			Console.WriteLine();
-			Console.WriteLine( "Press any key to advance to the next iteration..." );
-#endif
+			if ( KeypressAdvance )
+			{
+				Console.WriteLine();
+				Console.WriteLine( "Press any key to advance to the next iteration..." );
+			}
 
 			// Continue looping until the goal is reached
 			while ( currentNode != GoalNode && OpenSet.Count > 0 )
 			{
-#if ( ASTAR_DEBUG && ASTAR_KEY_STEPPING )
-				// Run one iteration for each keypress
-				Console.ReadKey();
-				Console.WriteLine( currentNode );
-#endif
+				if ( KeypressAdvance )
+				{
+					Console.ReadKey();
+					Console.WriteLine( currentNode );
+				}
+
 				SWFindMin.Start();
 
 				// Find the lowest cost node in the open list
@@ -293,20 +368,63 @@ namespace AStarTesting.NaiveAStar
 				);
 
 				SWFindMin.Stop();
+				SWOpenSet.Start();
 
+				// Remove this node on the open set
 				OpenSet.Remove( currentNode );
+
+				SWOpenSet.Stop();
+				SWClosedSet.Start();
+
+				// Then add it to the closed set
 				ClosedSet.Add( currentNode );
+
+				SWClosedSet.Stop();
 
 				foreach ( NaiveAStarNode node in currentNode.Neighbors )
 				{
-					if ( node.Traversable && !ClosedSet.Contains( node ) )
-					{
-						float costFromThisNode = GetCostFromStart( node, currentNode );
-						if ( !OpenSet.Contains( node ) )
-						{
-							OpenSet.Add( node );
-							node.Parent = currentNode;
+					SWClosedSet.Start();
 
+					// Check if the current node belongs to the closed set
+					bool isInClosedSet = ClosedSet.Contains( node );
+
+					SWClosedSet.Stop();
+
+					// If this node is traversable and is NOT in the closed set
+					if ( node.Traversable && !isInClosedSet )
+					{
+						SWOpenSet.Start();
+
+						// Check if the current node is in the open set
+						bool isInOpenSet = OpenSet.Contains( node );
+
+						SWOpenSet.Stop();
+						SWNodes.Start();
+
+						// Compute the CoeffCostFromStart of moving to this node assuming the
+						// current node were its parent
+						float costFromThisNode = GetCostFromStart( node, currentNode );
+
+						SWNodes.Stop();
+
+						// If this node is NOT in the open set
+						if ( !isInOpenSet )
+						{
+							SWOpenSet.Start();
+
+							// Add the node to the open set
+							OpenSet.Add( node );
+
+							SWOpenSet.Stop();
+							SWNodes.Start();
+
+							// Calculate its cost and set its parent to the current node
+							node.Parent = currentNode;
+							node.CostFromStart = costFromThisNode;
+							node.CostToGoal = GetCostToGoal( node );
+							node.CostTotal = node.CostFromStart + node.CostToGoal;
+
+							SWNodes.Stop();
 							NodesConsideredCount++;
 						}
 						else
@@ -314,11 +432,17 @@ namespace AStarTesting.NaiveAStar
 							// If this node would have been reached more easily by this route
 							if ( node.CostFromStart > costFromThisNode )
 							{
+								SWNodes.Start();
+
+								// Reset the parent to the current node and recalculate the node cost
 								node.Parent = currentNode;
+								node.CostFromStart = costFromThisNode;
+								// Don't need to update cost to goal -- that remains the same
+								node.CostTotal = node.CostFromStart + node.CostToGoal;
+
+								SWNodes.Stop();
 							}
 						}
-						node.CostFromStart = costFromThisNode;
-						node.CostTotal = node.CostFromStart + node.CostToGoal;
 					}
 				}
 
@@ -334,9 +458,16 @@ namespace AStarTesting.NaiveAStar
 			}
 			Path.Reverse();
 
-			PathLength = mPath.Count;
 			SWBacktrace.Stop();
 			SWTotal.Stop();
+			PathLength = mPath.Count;
+		}
+
+		public override string ToString()
+		{
+			return "Agent >> Heuristic: " + Heuristic.GetType().Name + 
+				", Start: [ " + StartNode.Column + " : " + StartNode.Row + 
+				" ], Goal: [ " + GoalNode.Column + " : " + GoalNode.Row + " ]";
 		}
 
 		#endregion
@@ -345,14 +476,18 @@ namespace AStarTesting.NaiveAStar
 		///////////////////////////////////////////////////////////////////////////////////////////
 		#region ctor
 
-		public NaiveAStarAgent( INaiveAStarHeuristic heuristic, float coeffCostFromStart = 1f, float coeffCostToGoal = 1f )
+		public NaiveAStarAgent( INaiveAStarHeuristic heuristic, float coeffCostFromStart = 1f, float coeffCostToGoal = 1f, bool keypressAdvance = false )
 		{
-			SWTotal = new Stopwatch();
-			SWSetup = new Stopwatch();
-			SWBody = new Stopwatch();
-			SWFindMin = new Stopwatch();
 			SWBacktrace = new Stopwatch();
-
+			SWBody = new Stopwatch();
+			SWClosedSet = new Stopwatch();
+			SWFindMin = new Stopwatch();
+			SWNodes = new Stopwatch();
+			SWOpenSet = new Stopwatch();
+			SWSetup = new Stopwatch();
+			SWTotal = new Stopwatch();
+			
+			KeypressAdvance = keypressAdvance;
 			Heuristic = heuristic;
 			CoeffCostFromStart = coeffCostFromStart;
 			CoeffCostToGoal = coeffCostToGoal;

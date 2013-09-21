@@ -1,17 +1,4 @@
-﻿//
-//
-// *** CONDITIONAL COMPILATION NOTES! ***
-//
-// See the Build tab in the project Properties and change the "Conditional Compilation Symbols" to
-// adjust how debug logging and user input works.
-// 
-// Symbols:
-// ASTAR_DEBUG			This symbol forces the printout of a bunch of useful data to the console.
-// ASTAR_KEY_STEPPING	This symbol makes the pathfinding operation wait for a keypress before each iteration.
-//
-//
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -25,7 +12,11 @@ namespace AStarTesting
 {
 	public class AStarTestbed
 	{
+		///////////////////////////////////////////////////////////////////////////////////////////
+		#region Member Variables
+
 		Dictionary<string, INaiveAStarHeuristic> heuristicsMap;
+		bool		keypressAdvance;
 		int			randomSeed;
 		GridType	gridType;
 		int			columns,				rows;
@@ -36,6 +27,8 @@ namespace AStarTesting
 		float		minSimplexYOffset,		maxSimplexYOffset;
 		float		minCoeffCostFromStart,	maxCoeffCostFromStart;
 		float		minCoeffCostToGoal,		maxCoeffCostToGoal;
+
+		#endregion
 
 		public AStarTestbed()
 		{
@@ -64,6 +57,7 @@ namespace AStarTesting
 				default:				throw new ArgumentOutOfRangeException();
 			}
 
+			keypressAdvance			= bool.Parse( xdoc.Descendants( "keypressAdvance" ).First().Value );
 			randomSeed				= int.Parse( xdoc.Descendants( "randomSeed" ).First().Value );
 			columns					= int.Parse( xdoc.Descendants( "columns" ).First().Value );
 			rows					= int.Parse( xdoc.Descendants( "rows" ).First().Value );
@@ -82,7 +76,9 @@ namespace AStarTesting
 			minCoeffCostToGoal		= float.Parse( xdoc.Descendants( "minCoeffCostToGoal" ).First().Value );
 			maxCoeffCostToGoal		= float.Parse( xdoc.Descendants( "maxCoeffCostToGoal" ).First().Value );
 
-#if ( ASTAR_DEBUG )
+			Console.WriteLine();
+			if ( keypressAdvance )	Console.WriteLine( "Keypress advance is ENABLED!" );
+			else					Console.WriteLine( "Keypress advance is disabled." );
 			Console.WriteLine();
 			Console.WriteLine( "*** Configuration ***" );
 			Console.WriteLine( "randomSeed:\t\t" + randomSeed );
@@ -103,7 +99,6 @@ namespace AStarTesting
 			Console.WriteLine( "maxCoeffCostFromStart:\t" + maxCoeffCostFromStart );
 			Console.WriteLine( "minCoeffCostToGoal:\t" + minCoeffCostToGoal );
 			Console.WriteLine( "maxCoeffCostToGoal:\t" + maxCoeffCostToGoal );
-#endif
 
 			// Build list of heuristics to use
 			List<INaiveAStarHeuristic> heuristics = new List<INaiveAStarHeuristic>();
@@ -114,14 +109,12 @@ namespace AStarTesting
 					heuristics.Add( heuristic );
 			}
 
-#if ( ASTAR_DEBUG )
 			Console.WriteLine();
 			Console.WriteLine( "*** Heuristics ***" );
 			foreach ( INaiveAStarHeuristic heuristic in heuristics )
 			{
 				Console.WriteLine( heuristic.GetType().Name );
 			}
-#endif
 
 			#endregion
 
@@ -132,7 +125,9 @@ namespace AStarTesting
 			string datetime = DateTime.Now.ToString( "yyyy-MM-dd_HH-mm-ss" );
 			string filename = "results_" + datetime + ".csv";
 			string output = String.Join( ",", 
+				"Keypress Advance", 
 				"Random Seed",
+				"Grid Type",
 				"Navmesh Columns",
 				"Navmesh Rows",
 				"Start Node",
@@ -143,31 +138,33 @@ namespace AStarTesting
 				"Heuristic",
 				"Coeff From Start",
 				"Coeff To Goal",
-				"External (ms)", 
 				"Total (ms)", 
 				"Setup (ms)", 
 				"Body (ms)", 
 				"Find Min (ms)",
 				"Backtrace (ms)", 
-				"External (ticks)", 
+				"Closed Set (ms)", 
+				"Open Set (ms)", 
+				"Nodes (ms)", 
 				"Total (ticks)", 
 				"Setup (ticks)", 
 				"Body (ticks)", 
 				"Find Min (ticks)",
 				"Backtrace (ticks)", 
+				"Closed Set (ticks)", 
+				"Open Set (ticks)", 
+				"Nodes (ticks)", 
 				"Nodes Considered", 
 				"Max Open Set", 
 				"Path Length", 
-				UTF8Encoding.UTF8
+				"Path Nodes"
 			);
 			File.WriteAllText( filename, output, UTF8Encoding.UTF8 );
 
-#if ( DEBUG )
 			Console.WriteLine();
 			Console.WriteLine( "*** Output File ***" );
 			Console.WriteLine( "Filename:\t" + filename );
 			Console.WriteLine( "Encoding:\t" + UTF8Encoding.UTF8.ToString() );
-#endif
 
 			#endregion
 
@@ -183,28 +180,24 @@ namespace AStarTesting
 			// Create and size the navmesh -- It will not be resized after this
 			NaiveAStarNavmesh navmesh = new NaiveAStarNavmesh( gridType, columns, rows );
 
-#if ( ASTAR_DEBUG )
 			Console.WriteLine();
 			Console.WriteLine( "*** Navmesh Nodes (10x10 Sample) ***" );
-			for ( int x = 0; x < 10 || x < navmesh.Columns; x++ )
-				for ( int y = 0; y < 10 || y < navmesh.Rows; y++ )
+			for ( int x = 0; x < 10 && x < navmesh.Columns; x++ )
+				for ( int y = 0; y < 10 && y < navmesh.Rows; y++ )
 					Console.WriteLine( navmesh.Navmesh[ x, y ].ToString() );
-#endif
 
-#if ( ASTAR_DEBUG )
-				Console.WriteLine();
-				Console.WriteLine( "*** Agents ***" );
-#endif
+			Console.WriteLine();
+			Console.WriteLine( "*** Agents ***" );
 
 			// Create a list of agents and randomize their configurations
 			for ( int i = 0; i < agents; i++ )
 			{
-				NaiveAStarAgent agent = new NaiveAStarAgent( null );
+				INaiveAStarHeuristic heuristic = heuristics[ random.Next( 0, heuristics.Count ) ];
+				float coeffCostFromStart = (float)( minCoeffCostFromStart + random.NextDouble() * ( maxCoeffCostFromStart - minCoeffCostFromStart ) );
+				float coeffCostToGoal = (float)( minCoeffCostToGoal + random.NextDouble() * ( maxCoeffCostToGoal - minCoeffCostToGoal ) );
 
-				agent.Heuristic = heuristics[ random.Next( 0, heuristics.Count ) ];
-				agent.CoeffCostFromStart = (float)( minCoeffCostFromStart + random.NextDouble() * ( maxCoeffCostFromStart - minCoeffCostFromStart ) );
-				agent.CoeffCostToGoal = (float)( minCoeffCostToGoal + random.NextDouble() * ( maxCoeffCostToGoal - minCoeffCostToGoal ) );
-				
+				NaiveAStarAgent agent = new NaiveAStarAgent( heuristic, coeffCostFromStart, coeffCostToGoal, keypressAdvance );
+
 				int xStart = random.Next( 0, navmesh.Columns );
 				int yStart = random.Next( 0, navmesh.Rows );
 				agent.StartNode = navmesh.Navmesh[ xStart, yStart ];
@@ -215,9 +208,7 @@ namespace AStarTesting
 
 				navmesh.AddAgent( agent );
 
-#if ( ASTAR_DEBUG )
-				Console.WriteLine( "Agent >> Heuristic: " + agent.Heuristic.GetType().Name + ", Start: [ " + xStart + " : " + yStart + " ], Goal: [ " + xGoal + " : " + yGoal + " ]" );
-#endif
+				Console.WriteLine( agent );
 			}
 
 			#endregion
@@ -235,6 +226,7 @@ namespace AStarTesting
 			for ( int i = 0; i < iterations; i++ )
 			{
 				Console.WriteLine();
+				Console.WriteLine();
 				Console.WriteLine( "Iteration " + ( i + 1 ) + " started!" );
 
 				// Randomize terrain costs
@@ -244,7 +236,7 @@ namespace AStarTesting
 				float simplexYOffset = (float)( minSimplexYOffset + random.NextDouble() * ( maxSimplexYOffset - minSimplexYOffset ) );
 				navmesh.GenerateResistanceNoise( simplexAmplitude, simplexScale, simplexXOffset, simplexYOffset );
 
-#if ( ASTAR_DEBUG )
+#if ( DEBUG )	// Don't need to see raw move costs unless this is a debug build
 				Console.WriteLine();
 				Console.WriteLine( "*** Navmesh Move Costs ***" );
 				for ( int x = 0; x < navmesh.Columns; x++ )
@@ -258,28 +250,21 @@ namespace AStarTesting
 				}
 #endif
 
-#if ( ASTAR_DEBUG )
 				Console.WriteLine();
-#endif
 
 				for ( int j = 0; j < agents; j++ )
 				{
-#if ( ASTAR_DEBUG )
 					NaiveAStarAgent peekAgent = navmesh.Agents.Peek();
-					Console.WriteLine( 
-						"Agent >> Heuristic: " + peekAgent.Heuristic.GetType().Name + 
-						", Start: [ " + peekAgent.StartNode.Column + " : " + peekAgent.StartNode.Row + 
-						" ], Goal: [ " + peekAgent.GoalNode.Column + " : " + peekAgent.GoalNode.Row + " ]" 
-					);
-#endif
+					Console.WriteLine();
+					Console.WriteLine( peekAgent );
+
 					// Solve the A* path for this agent on the navmesh
-					stopwatch.Reset();
-					stopwatch.Start();
 					NaiveAStarAgent solvedAgent = navmesh.SolveNext();
-					stopwatch.Stop();
 
 					// Store the test parameters
+					result.KeypressAdvance		= keypressAdvance;
 					result.RandomSeed			= randomSeed;
+					result.NavmeshGridType		= navmesh.GridType.ToString();
 					result.NavmeshColumns		= navmesh.Columns;
 					result.NavmeshRows			= navmesh.Rows;
 					result.XStart				= solvedAgent.StartNode.Column;
@@ -295,27 +280,30 @@ namespace AStarTesting
 					result.CoeffCostToGoal		= solvedAgent.CoeffCostToGoal;
 
 					// Store the test results
-					result.MSExternal			= stopwatch.ElapsedMilliseconds;
-					result.TicksExternal		= stopwatch.ElapsedTicks;
-					result.MSTotal				= solvedAgent.SWTotal.ElapsedMilliseconds;
-					result.TicksTotal			= solvedAgent.SWTotal.ElapsedTicks;
-					result.MSSetup				= solvedAgent.SWSetup.ElapsedMilliseconds;
-					result.TicksSetup			= solvedAgent.SWSetup.ElapsedTicks;
-					result.MSBody				= solvedAgent.SWBody.ElapsedMilliseconds;
-					result.TicksBody			= solvedAgent.SWBody.ElapsedTicks;
-					result.MSFindMin			= solvedAgent.SWFindMin.ElapsedMilliseconds;
-					result.TicksFindMin			= solvedAgent.SWFindMin.ElapsedTicks;
-					result.MSBacktrace			= solvedAgent.SWBacktrace.ElapsedMilliseconds;
-					result.TicksBacktrace		= solvedAgent.SWBacktrace.ElapsedTicks;
-					result.NodesConsideredCount	= solvedAgent.NodesConsideredCount;
 					result.MaxOpenSetCount		= solvedAgent.MaxOpenSetCount;
+					result.NodesConsideredCount	= solvedAgent.NodesConsideredCount;
 					result.PathLength			= solvedAgent.PathLength;
 					result.PathString			= solvedAgent.PathString;
+					result.MSBacktrace			= solvedAgent.SWBacktrace.ElapsedMilliseconds;
+					result.TicksBacktrace		= solvedAgent.SWBacktrace.ElapsedTicks;
+					result.MSBody				= solvedAgent.SWBody.ElapsedMilliseconds;
+					result.TicksBody			= solvedAgent.SWBody.ElapsedTicks;
+					result.MSClosedSet			= solvedAgent.SWClosedSet.ElapsedMilliseconds;
+					result.TicksClosedSet		= solvedAgent.SWClosedSet.ElapsedTicks;
+					result.MSFindMin			= solvedAgent.SWFindMin.ElapsedMilliseconds;
+					result.TicksFindMin			= solvedAgent.SWFindMin.ElapsedTicks;
+					result.MSNodes				= solvedAgent.SWNodes.ElapsedMilliseconds;
+					result.TicksNodes			= solvedAgent.SWNodes.ElapsedTicks;
+					result.MSOpenSet			= solvedAgent.SWOpenSet.ElapsedMilliseconds;
+					result.TicksOpenSet			= solvedAgent.SWOpenSet.ElapsedTicks;
+					result.MSSetup				= solvedAgent.SWSetup.ElapsedMilliseconds;
+					result.TicksSetup			= solvedAgent.SWSetup.ElapsedTicks;
+					result.MSTotal				= solvedAgent.SWTotal.ElapsedMilliseconds;
+					result.TicksTotal			= solvedAgent.SWTotal.ElapsedTicks;
 
 					// Write results to the output file
 					File.AppendAllText( filename, "\n" + result, UTF8Encoding.UTF8 );
 
-					Console.WriteLine();
 					Console.WriteLine( "Result " + ( j + 1 ) + " stored." );
 				}
 
