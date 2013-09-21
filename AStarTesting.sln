@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AStarTesting", "AStarTesting\AStarTesting.csproj", "{BF65E705-1A2A-470D-B39E-6F1B98CA7295}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimplexNoise", "SimplexNoise\SimplexNoise.csproj", "{733B3143-822A-41B7-A021-9BF7AE84C2D5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BF65E705-1A2A-470D-B39E-6F1B98CA7295}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BF65E705-1A2A-470D-B39E-6F1B98CA7295}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BF65E705-1A2A-470D-B39E-6F1B98CA7295}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BF65E705-1A2A-470D-B39E-6F1B98CA7295}.Release|Any CPU.Build.0 = Release|Any CPU
+		{733B3143-822A-41B7-A021-9BF7AE84C2D5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{733B3143-822A-41B7-A021-9BF7AE84C2D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{733B3143-822A-41B7-A021-9BF7AE84C2D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{733B3143-822A-41B7-A021-9BF7AE84C2D5}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

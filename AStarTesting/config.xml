@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<config>
+  <randomSeed>12345</randomSeed>
+  <columns>100</columns>
+  <rows>100</rows>
+  <agents>1</agents>
+  <iterations>100</iterations>
+  <minSimplexAmplitude>0.1</minSimplexAmplitude>
+  <maxSimplexAmplitude>10.0</maxSimplexAmplitude>
+  <minSimplexScale>0.1</minSimplexScale>
+  <maxSimplexScale>10.0</maxSimplexScale>
+  <minCoeffCostFromStart>1.0</minCoeffCostFromStart>
+  <maxCoeffCostFromStart>1.0</maxCoeffCostFromStart>
+  <minCoeffCostToGoal>1.0</minCoeffCostToGoal>
+  <maxCoeffCostToGoal>1.0</maxCoeffCostToGoal>
+</config>
