@@ -1,14 +1,22 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <config>
   <randomSeed>12345</randomSeed>
-  <columns>100</columns>
-  <rows>100</rows>
-  <agents>1</agents>
-  <iterations>100</iterations>
-  <minSimplexAmplitude>0.1</minSimplexAmplitude>
-  <maxSimplexAmplitude>10.0</maxSimplexAmplitude>
-  <minSimplexScale>0.1</minSimplexScale>
-  <maxSimplexScale>10.0</maxSimplexScale>
+  <gridType>SquareGrid</gridType><!-- "SquareGrid", "SquareDiagonal" or "HexGrid" -->
+  <columns>10</columns>
+  <rows>10</rows>
+  <agents>10</agents>
+  <iterations>10</iterations>
+  <heuristics><!-- "Manhattan" or "StraightLine" currently -->
+    <heuristic>Manhattan</heuristic>
+  </heuristics>
+  <minSimplexAmplitude>1.0</minSimplexAmplitude>
+  <maxSimplexAmplitude>1.0</maxSimplexAmplitude>
+  <minSimplexScale>1.0</minSimplexScale>
+  <maxSimplexScale>1.0</maxSimplexScale>
+  <minSimplexXOffset>0.0</minSimplexXOffset>
+  <maxSimplexXOffset>0.0</maxSimplexXOffset>
+  <minSimplexYOffset>0.0</minSimplexYOffset>
+  <maxSimplexYOffset>0.0</maxSimplexYOffset>
   <minCoeffCostFromStart>1.0</minCoeffCostFromStart>
   <maxCoeffCostFromStart>1.0</maxCoeffCostFromStart>
   <minCoeffCostToGoal>1.0</minCoeffCostToGoal>
