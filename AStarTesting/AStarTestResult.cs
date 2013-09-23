@@ -58,7 +58,7 @@ namespace AStarTesting
 				Heuristic, CoeffCostFromStart, CoeffCostToGoal,
 				MSTotal, MSSetup, MSBody, MSFindMin, MSBacktrace, MSClosedSet, MSOpenSet, MSNodes, 
 				TicksTotal, TicksSetup, TicksBody, TicksFindMin, TicksBacktrace, TicksClosedSet, TicksOpenSet, TicksNodes, 
-				NodesConsideredCount, MaxOpenSetCount, PathLength, PathString 
+				NodesConsideredCount, MaxClosedSetCount, MaxOpenSetCount, PathLength, PathString 
 			);
 		}
 	}
