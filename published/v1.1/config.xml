@@ -3,10 +3,10 @@
   <keypressAdvance>false</keypressAdvance>
   <randomSeed>12345</randomSeed>
   <gridType>HexGrid</gridType><!-- "SquareGrid", "SquareDiagonal" or "HexGrid" -->
-  <columns>20</columns>
-  <rows>20</rows>
+  <columns>100</columns>
+  <rows>100</rows>
   <agents>1</agents>
-  <iterations>10</iterations>
+  <iterations>20</iterations>
   <heuristics><!-- "Manhattan" or "StraightLine" currently -->
     <heuristic>StraightLine</heuristic>
   </heuristics>

@@ -270,6 +270,7 @@ namespace AStarTesting.NaiveAStar
 		/// </summary>
 		void ResetBenchmark()
 		{
+			MaxClosedSetCount = 0;
 			MaxOpenSetCount = 0;
 			NodesConsideredCount = 0;
 			PathLength = 0;
