@@ -75,6 +75,16 @@ namespace AStarTesting.NaiveAStar
 		/// <summary>
 		/// 
 		/// </summary>
+		long mMaxClosedSetCount;
+		public long MaxClosedSetCount
+		{
+			get { return mMaxClosedSetCount; }
+			set { mMaxClosedSetCount = value; }
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
 		long mMaxOpenSetCount;
 		public long MaxOpenSetCount
 		{
@@ -446,6 +456,7 @@ namespace AStarTesting.NaiveAStar
 					}
 				}
 
+				MaxClosedSetCount = Math.Max( MaxClosedSetCount, ClosedSet.Count );
 				MaxOpenSetCount = Math.Max( MaxOpenSetCount, OpenSet.Count );
 			}
 

@@ -155,6 +155,7 @@ namespace AStarTesting
 				"Open Set (ticks)", 
 				"Nodes (ticks)", 
 				"Nodes Considered", 
+				"Max Closed Set", 
 				"Max Open Set", 
 				"Path Length", 
 				"Path Nodes"
@@ -280,6 +281,7 @@ namespace AStarTesting
 					result.CoeffCostToGoal		= solvedAgent.CoeffCostToGoal;
 
 					// Store the test results
+					result.MaxClosedSetCount	= solvedAgent.MaxClosedSetCount;
 					result.MaxOpenSetCount		= solvedAgent.MaxOpenSetCount;
 					result.NodesConsideredCount	= solvedAgent.NodesConsideredCount;
 					result.PathLength			= solvedAgent.PathLength;

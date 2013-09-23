@@ -27,6 +27,7 @@ namespace AStarTesting
 		public float	CoeffCostToGoal;
 
 		// Result data
+		public long		MaxClosedSetCount;
 		public long		MaxOpenSetCount;
 		public long		NodesConsideredCount;
 		public long		PathLength;

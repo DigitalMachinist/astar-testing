@@ -13,6 +13,11 @@ namespace AStarTesting
 		#region Property Declarations
 
 		/// <summary>
+		/// The maximum size that the closed set reached during the last Solve() operation.
+		/// </summary>
+		long MaxClosedSetCount { get; set; }
+
+		/// <summary>
 		/// The maximum size that the open set reached during the last Solve() operation.
 		/// </summary>
 		long MaxOpenSetCount { get; set; }
