@@ -36,6 +36,7 @@ namespace AStarTesting
 			#region Setup heuristics map
 
 			heuristicsMap = new Dictionary<string,INaiveAStarHeuristic>();
+			heuristicsMap.Add( "Dijakstra", new DijakstraAStarHeuristic() );
 			heuristicsMap.Add( "Manhattan", new ManhattanAStarHeuristic() );
 			heuristicsMap.Add( "StraightLine", new StraightLineAStarHeuristic() );
 

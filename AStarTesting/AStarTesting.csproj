@@ -45,6 +45,7 @@
     <Compile Include="AStarTestResult.cs" />
     <Compile Include="BinaryHeap\BinaryHeap.cs" />
     <Compile Include="IAStarBenchmark.cs" />
+    <Compile Include="NaiveAStar\DijakstraAStarHeuristic.cs" />
     <Compile Include="NaiveAStar\StraightLineAStarHeuristic.cs" />
     <Compile Include="NaiveAStar\NaiveAStarAgent.cs" />
     <Compile Include="NaiveAStar\ManhattanAStarHeuristic.cs" />

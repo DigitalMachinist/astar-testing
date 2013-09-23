@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<config>
+  <keypressAdvance>false</keypressAdvance>
+  <randomSeed>12345</randomSeed>
+  <gridType>HexGrid</gridType><!-- "SquareGrid", "SquareDiagonal" or "HexGrid" -->
+  <columns>100</columns>
+  <rows>100</rows>
+  <agents>1</agents>
+  <iterations>10</iterations>
+  <heuristics><!-- "Dijakstra", "Manhattan" or "StraightLine" currently -->
+    <heuristic>StraightLine</heuristic>
+  </heuristics>
+  <minSimplexAmplitude>1.0</minSimplexAmplitude>
+  <maxSimplexAmplitude>1.0</maxSimplexAmplitude>
+  <minSimplexScale>0.1</minSimplexScale>
+  <maxSimplexScale>0.1</maxSimplexScale>
+  <minSimplexXOffset>0.0</minSimplexXOffset>
+  <maxSimplexXOffset>10000.0</maxSimplexXOffset>
+  <minSimplexYOffset>0.0</minSimplexYOffset>
+  <maxSimplexYOffset>10000.0</maxSimplexYOffset>
+  <minCoeffCostFromStart>1.0</minCoeffCostFromStart>
+  <maxCoeffCostFromStart>1.0</maxCoeffCostFromStart>
+  <minCoeffCostToGoal>1.0</minCoeffCostToGoal>
+  <maxCoeffCostToGoal>1.0</maxCoeffCostToGoal>
+</config>
