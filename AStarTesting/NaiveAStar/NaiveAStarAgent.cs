@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using AStarTesting.Navmesh;
+using AStarTesting.Heuristics;
+using AStarTesting.Testbed;
 
 namespace AStarTesting.NaiveAStar
 {
-	public class NaiveAStarAgent : IAStarBenchmark
+	public class NaiveAStarAgent : IAStarAgent, IAStarBenchmark
 	{
 		///////////////////////////////////////////////////////////////////////////////////////////
 		#region Properties
@@ -15,8 +17,8 @@ namespace AStarTesting.NaiveAStar
 		/// <summary>
 		/// 
 		/// </summary>
-		List<NaiveAStarNode> mClosedSet;
-		public List<NaiveAStarNode> ClosedSet
+		List<AStarNode> mClosedSet;
+		public List<AStarNode> ClosedSet
 		{
 			get { return mClosedSet; }
 			private set { mClosedSet = value; }
@@ -45,8 +47,8 @@ namespace AStarTesting.NaiveAStar
 		/// <summary>
 		/// 
 		/// </summary>
-		NaiveAStarNode mGoalNode;
-		public NaiveAStarNode GoalNode
+		AStarNode mGoalNode;
+		public AStarNode GoalNode
 		{
 			get { return mGoalNode; }
 			set { mGoalNode = value; }
@@ -55,8 +57,8 @@ namespace AStarTesting.NaiveAStar
 		/// <summary>
 		/// 
 		/// </summary>
-		INaiveAStarHeuristic mHeuristic;
-		public INaiveAStarHeuristic Heuristic
+		IAStarHeuristic mHeuristic;
+		public IAStarHeuristic Heuristic
 		{
 			get { return mHeuristic; }
 			set { mHeuristic = value; }
@@ -105,8 +107,8 @@ namespace AStarTesting.NaiveAStar
 		/// <summary>
 		/// 
 		/// </summary>
-		List<NaiveAStarNode> mOpenSet;
-		public List<NaiveAStarNode> OpenSet
+		List<AStarNode> mOpenSet;
+		public List<AStarNode> OpenSet
 		{
 			get { return mOpenSet; }
 			private set { mOpenSet = value; }
@@ -115,8 +117,8 @@ namespace AStarTesting.NaiveAStar
 		/// <summary>
 		/// 
 		/// </summary>
-		List<NaiveAStarNode> mPath;
-		public List<NaiveAStarNode> Path
+		List<AStarNode> mPath;
+		public List<AStarNode> Path
 		{
 			get { return mPath; }
 			private set { mPath = value; }
@@ -140,7 +142,7 @@ namespace AStarTesting.NaiveAStar
 			get
 			{
 				StringBuilder pathStr = new StringBuilder();
-				foreach ( NaiveAStarNode node in Path ) pathStr.Append( "[ " + node.Column + " : " + node.Row + " ], " );
+				foreach ( AStarNode node in Path ) pathStr.Append( "[ " + node.Column + " : " + node.Row + " ], " );
 				return pathStr.ToString();
 			}
 		}
@@ -148,8 +150,8 @@ namespace AStarTesting.NaiveAStar
 		/// <summary>
 		/// 
 		/// </summary>
-		NaiveAStarNode mStartNode;
-		public NaiveAStarNode StartNode
+		AStarNode mStartNode;
+		public AStarNode StartNode
 		{
 			get { return mStartNode; }
 			set { mStartNode = value; }
@@ -247,7 +249,7 @@ namespace AStarTesting.NaiveAStar
 		/// <param name="node">The node to compute the traversal cost to from the start node.</param>
 		/// <param name="parent">(Default null) The node to use as the parent. If null, this node is used.</param>
 		/// <returns>An integer traversal cost from the start node to the specified node, or 0 if parent == null.</returns>
-		public float GetCostFromStart( NaiveAStarNode node, NaiveAStarNode parent = null )
+		public float GetCostFromStart( AStarNode node, AStarNode parent = null )
 		{
 			if ( parent == null ) parent = node.Parent;
 			if ( parent == null ) return 0f;
@@ -259,7 +261,7 @@ namespace AStarTesting.NaiveAStar
 		/// </summary>
 		/// <param name="node">The node to compute the heuristic estimate traversal cost from to the goal node.</param>
 		/// <returns>An integer heuristic estimate traversal cost from the specified node to the goal node.</returns>
-		public float GetCostToGoal( NaiveAStarNode node )
+		public float GetCostToGoal( AStarNode node )
 		{
 			if ( Heuristic == null ) return 0f;
 			return CoeffCostToGoal * Heuristic.GetEstimatedCost( node, mGoalNode );
@@ -313,7 +315,7 @@ namespace AStarTesting.NaiveAStar
 			SWNodes.Start();
 
 			// Set the current node being considered
-			NaiveAStarNode currentNode = StartNode;
+			AStarNode currentNode = StartNode;
 			currentNode.Parent = null;
 			currentNode.CostFromStart = 0;
 			currentNode.CostToGoal = 0;
@@ -328,7 +330,7 @@ namespace AStarTesting.NaiveAStar
 			SWClosedSet.Stop();
 		
 			// Open list of nodes to consider and the node's parent (for backtracing)
-			foreach ( NaiveAStarNode node in currentNode.Neighbors )
+			foreach ( AStarNode node in currentNode.Neighbors )
 			{
 				if ( node.Traversable )
 				{
@@ -392,7 +394,7 @@ namespace AStarTesting.NaiveAStar
 
 				SWClosedSet.Stop();
 
-				foreach ( NaiveAStarNode node in currentNode.Neighbors )
+				foreach ( AStarNode node in currentNode.Neighbors )
 				{
 					SWClosedSet.Start();
 
@@ -488,7 +490,7 @@ namespace AStarTesting.NaiveAStar
 		///////////////////////////////////////////////////////////////////////////////////////////
 		#region ctor
 
-		public NaiveAStarAgent( INaiveAStarHeuristic heuristic, float coeffCostFromStart = 1f, float coeffCostToGoal = 1f, bool keypressAdvance = false )
+		public NaiveAStarAgent( IAStarHeuristic heuristic, float coeffCostFromStart = 1f, float coeffCostToGoal = 1f, bool keypressAdvance = false )
 		{
 			SWBacktrace = new Stopwatch();
 			SWBody = new Stopwatch();
@@ -504,9 +506,9 @@ namespace AStarTesting.NaiveAStar
 			CoeffCostFromStart = coeffCostFromStart;
 			CoeffCostToGoal = coeffCostToGoal;
 
-			ClosedSet = new List<NaiveAStarNode>();
-			OpenSet = new List<NaiveAStarNode>();
-			Path = new List<NaiveAStarNode>();;
+			ClosedSet = new List<AStarNode>();
+			OpenSet = new List<AStarNode>();
+			Path = new List<AStarNode>();;
 		}
 
 		#endregion

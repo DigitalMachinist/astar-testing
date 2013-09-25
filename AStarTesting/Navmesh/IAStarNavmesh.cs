@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using SimplexNoise;
 
-namespace AStarTesting.NaiveAStar
+namespace AStarTesting.Navmesh
 {
 	public enum GridType
 	{
@@ -14,7 +11,7 @@ namespace AStarTesting.NaiveAStar
 		HexGrid			// A regular hexagonal grid
 	}
 	
-	public class NaiveAStarNavmesh
+	public class IAStarNavmesh
 	{
 		///////////////////////////////////////////////////////////////////////////////////////////
 		#region Properties
@@ -22,8 +19,8 @@ namespace AStarTesting.NaiveAStar
 		/// <summary>
 		/// 
 		/// </summary>
-		Queue<NaiveAStarAgent> mAgents;
-		public Queue<NaiveAStarAgent> Agents
+		Queue<IAStarAgent> mAgents;
+		public Queue<IAStarAgent> Agents
 		{
 			get { return mAgents; }
 			private set { mAgents = value; }
@@ -52,8 +49,8 @@ namespace AStarTesting.NaiveAStar
 		/// <summary>
 		/// 
 		/// </summary>
-		NaiveAStarNode[,] mNavmesh;
-		public NaiveAStarNode[,] Navmesh
+		AStarNode[,] mNavmesh;
+		public AStarNode[,] Navmesh
 		{
 			get { return mNavmesh; }
 			private set { mNavmesh = value; }
@@ -80,7 +77,7 @@ namespace AStarTesting.NaiveAStar
 		/// </summary>
 		/// <param name="agentToAdd">The agent to add to the queue.</param>
 		/// <returns>True if the specified agent was added. False if the specified user is in the queue already.</returns>
-		public bool AddAgent( NaiveAStarAgent agentToAdd )
+		public bool AddAgent( IAStarAgent agentToAdd )
 		{
 			if ( Agents.Contains( agentToAdd ) )
 				return false;
@@ -116,7 +113,7 @@ namespace AStarTesting.NaiveAStar
 			// Build the mesh nodes
 			for ( int i = 0; i < Columns; i++ )
 				for ( int j = 0; j < Rows; j++ )
-					Navmesh[ i, j ] = new NaiveAStarNode( i, j, true, 1f );
+					Navmesh[ i, j ] = new AStarNode( i, j, true, 1f );
 
 			// Link the navmesh for the selected grid type
 			switch ( GridType )
@@ -239,13 +236,13 @@ namespace AStarTesting.NaiveAStar
 		/// </summary>
 		/// <param name="agentToRemove">The agent to remove from the queue.</param>
 		/// <returns>True if the specified agent was removed. False if the specified user wan't found in the queue.</returns>
-		public bool RemoveAgent( NaiveAStarAgent agentToRemove )
+		public bool RemoveAgent( IAStarAgent agentToRemove )
 		{
 			if ( !Agents.Contains( agentToRemove ) )
 				return false;
 
-			NaiveAStarAgent firstAgent = Agents.Dequeue();
-			for ( NaiveAStarAgent nextAgent = Agents.Dequeue();   nextAgent != firstAgent;   nextAgent = Agents.Dequeue() )
+			IAStarAgent firstAgent = Agents.Dequeue();
+			for ( IAStarAgent nextAgent = Agents.Dequeue();   nextAgent != firstAgent;   nextAgent = Agents.Dequeue() )
 			{
 				if ( agentToRemove != nextAgent )
 					Agents.Enqueue( nextAgent );
@@ -258,9 +255,9 @@ namespace AStarTesting.NaiveAStar
 		/// Solve the A* path for the next agent in the queue.
 		/// </summary>
 		/// <returns>The agent that a path was solved for.</returns>
-		public NaiveAStarAgent SolveNext()
+		public IAStarAgent SolveNext()
 		{
-			NaiveAStarAgent nextAgent = Agents.Dequeue();
+			IAStarAgent nextAgent = Agents.Dequeue();
 			nextAgent.Solve();
 			Agents.Enqueue( nextAgent );
 
@@ -273,13 +270,13 @@ namespace AStarTesting.NaiveAStar
 		///////////////////////////////////////////////////////////////////////////////////////////
 		#region ctor
 
-		public NaiveAStarNavmesh( GridType gridType, int columns, int rows )
+		public IAStarNavmesh( GridType gridType, int columns, int rows )
 		{
 			GridType = gridType;
 			Columns = columns;
 			Rows = rows;
-			Agents = new Queue<NaiveAStarAgent>();
-			Navmesh = new NaiveAStarNode[ mColumns, mRows ];
+			Agents = new Queue<IAStarAgent>();
+			Navmesh = new AStarNode[ mColumns, mRows ];
 
 			Init();
 		}

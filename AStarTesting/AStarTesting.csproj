@@ -41,17 +41,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AStarTestbed.cs" />
-    <Compile Include="AStarTestResult.cs" />
+    <Compile Include="Testbed\AStarTestbed.cs" />
+    <Compile Include="Testbed\AStarTestResult.cs" />
     <Compile Include="BinaryHeap\BinaryHeap.cs" />
-    <Compile Include="IAStarBenchmark.cs" />
-    <Compile Include="NaiveAStar\DijakstraAStarHeuristic.cs" />
-    <Compile Include="NaiveAStar\StraightLineAStarHeuristic.cs" />
+    <Compile Include="Navmesh\IAStarAgent.cs" />
+    <Compile Include="Testbed\IAStarBenchmark.cs" />
+    <Compile Include="Heuristics\DijakstraAStarHeuristic.cs" />
+    <Compile Include="Heuristics\StraightLineAStarHeuristic.cs" />
     <Compile Include="NaiveAStar\NaiveAStarAgent.cs" />
-    <Compile Include="NaiveAStar\ManhattanAStarHeuristic.cs" />
-    <Compile Include="NaiveAStar\INaiveAStarHeuristic.cs" />
-    <Compile Include="NaiveAStar\NaiveAStarNavmesh.cs" />
-    <Compile Include="NaiveAStar\NaiveAStarNode.cs" />
+    <Compile Include="Heuristics\ManhattanAStarHeuristic.cs" />
+    <Compile Include="Heuristics\IAStarHeuristic.cs" />
+    <Compile Include="Navmesh\IAStarNavmesh.cs" />
+    <Compile Include="Navmesh\AStarNode.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -68,6 +69,9 @@
     <Content Include="config.xml">
       <SubType>Designer</SubType>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="OptimizedAStar\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

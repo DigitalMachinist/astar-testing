@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using AStarTesting.Navmesh;
 
-namespace AStarTesting.NaiveAStar
+namespace AStarTesting.Heuristics
 {
-	public interface INaiveAStarHeuristic
+	public interface IAStarHeuristic
 	{
 		///////////////////////////////////////////////////////////////////////////////////////////
 		#region Method Declarations
@@ -15,7 +13,7 @@ namespace AStarTesting.NaiveAStar
 		/// Returns the estimated heuristic cost to reach the goal node from the current node (define the nodes in your implementation).
 		/// </summary>
 		/// <returns>An integer representing the heuristic estimate traversal cost.</returns>
-		float GetEstimatedCost( NaiveAStarNode currentNode, NaiveAStarNode goalNode );
+		float GetEstimatedCost( AStarNode currentNode, AStarNode goalNode );
 
 		#endregion
 	}

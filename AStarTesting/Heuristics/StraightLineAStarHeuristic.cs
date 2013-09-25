@@ -1,17 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using AStarTesting.Navmesh;
 
-namespace AStarTesting.NaiveAStar
+namespace AStarTesting.Heuristics
 {
-	public class StraightLineAStarHeuristic : INaiveAStarHeuristic
+	public class StraightLineAStarHeuristic : IAStarHeuristic
 	{
 		///////////////////////////////////////////////////////////////////////////////////////////
 		#region Interface Methods
 		
-		public float GetEstimatedCost( NaiveAStarNode currentNode, NaiveAStarNode goalNode )
+		public float GetEstimatedCost( AStarNode currentNode, AStarNode goalNode )
 		{
 			float diffColumns = Math.Abs( goalNode.Column - currentNode.Column );
 			float diffRows = Math.Abs( goalNode.Row - currentNode.Row );

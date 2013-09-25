@@ -7,15 +7,17 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using AStarTesting.NaiveAStar;
+using AStarTesting.Navmesh;
+using AStarTesting.Heuristics;
 
-namespace AStarTesting
+namespace AStarTesting.Testbed
 {
 	public class AStarTestbed
 	{
 		///////////////////////////////////////////////////////////////////////////////////////////
 		#region Member Variables
 
-		Dictionary<string, INaiveAStarHeuristic> heuristicsMap;
+		Dictionary<string, IAStarHeuristic> heuristicsMap;
 		bool		keypressAdvance;
 		int			randomSeed;
 		GridType	gridType;
@@ -35,7 +37,7 @@ namespace AStarTesting
 			///////////////////////////////////////////////////////////////////////////////////////
 			#region Setup heuristics map
 
-			heuristicsMap = new Dictionary<string,INaiveAStarHeuristic>();
+			heuristicsMap = new Dictionary<string,IAStarHeuristic>();
 			heuristicsMap.Add( "Dijakstra", new DijakstraAStarHeuristic() );
 			heuristicsMap.Add( "Manhattan", new ManhattanAStarHeuristic() );
 			heuristicsMap.Add( "StraightLine", new StraightLineAStarHeuristic() );
@@ -102,17 +104,17 @@ namespace AStarTesting
 			Console.WriteLine( "maxCoeffCostToGoal:\t" + maxCoeffCostToGoal );
 
 			// Build list of heuristics to use
-			List<INaiveAStarHeuristic> heuristics = new List<INaiveAStarHeuristic>();
+			List<IAStarHeuristic> heuristics = new List<IAStarHeuristic>();
 			foreach ( XElement heuristicTag in xdoc.Descendants( "heuristics" ) )
 			{
-				INaiveAStarHeuristic heuristic = null;
+				IAStarHeuristic heuristic = null;
 				if ( heuristicsMap.TryGetValue( heuristicTag.Value, out heuristic ) )
 					heuristics.Add( heuristic );
 			}
 
 			Console.WriteLine();
 			Console.WriteLine( "*** Heuristics ***" );
-			foreach ( INaiveAStarHeuristic heuristic in heuristics )
+			foreach ( IAStarHeuristic heuristic in heuristics )
 			{
 				Console.WriteLine( heuristic.GetType().Name );
 			}
@@ -180,7 +182,7 @@ namespace AStarTesting
 			Stopwatch stopwatch = new Stopwatch();
 
 			// Create and size the navmesh -- It will not be resized after this
-			NaiveAStarNavmesh navmesh = new NaiveAStarNavmesh( gridType, columns, rows );
+			IAStarNavmesh navmesh = new IAStarNavmesh( gridType, columns, rows );
 
 			Console.WriteLine();
 			Console.WriteLine( "*** Navmesh Nodes (10x10 Sample) ***" );
@@ -194,7 +196,7 @@ namespace AStarTesting
 			// Create a list of agents and randomize their configurations
 			for ( int i = 0; i < agents; i++ )
 			{
-				INaiveAStarHeuristic heuristic = heuristics[ random.Next( 0, heuristics.Count ) ];
+				IAStarHeuristic heuristic = heuristics[ random.Next( 0, heuristics.Count ) ];
 				float coeffCostFromStart = (float)( minCoeffCostFromStart + random.NextDouble() * ( maxCoeffCostFromStart - minCoeffCostFromStart ) );
 				float coeffCostToGoal = (float)( minCoeffCostToGoal + random.NextDouble() * ( maxCoeffCostToGoal - minCoeffCostToGoal ) );
 
@@ -256,12 +258,13 @@ namespace AStarTesting
 
 				for ( int j = 0; j < agents; j++ )
 				{
-					NaiveAStarAgent peekAgent = navmesh.Agents.Peek();
+					IAStarAgent peekAgent = navmesh.Agents.Peek();
 					Console.WriteLine();
 					Console.WriteLine( peekAgent );
 
 					// Solve the A* path for this agent on the navmesh
-					NaiveAStarAgent solvedAgent = navmesh.SolveNext();
+					IAStarAgent solvedAgent = navmesh.SolveNext();
+					IAStarBenchmark benchmark = solvedAgent as IAStarBenchmark;
 
 					// Store the test parameters
 					result.KeypressAdvance		= keypressAdvance;
@@ -282,27 +285,27 @@ namespace AStarTesting
 					result.CoeffCostToGoal		= solvedAgent.CoeffCostToGoal;
 
 					// Store the test results
-					result.MaxClosedSetCount	= solvedAgent.MaxClosedSetCount;
-					result.MaxOpenSetCount		= solvedAgent.MaxOpenSetCount;
-					result.NodesConsideredCount	= solvedAgent.NodesConsideredCount;
-					result.PathLength			= solvedAgent.PathLength;
-					result.PathString			= solvedAgent.PathString;
-					result.MSBacktrace			= solvedAgent.SWBacktrace.ElapsedMilliseconds;
-					result.TicksBacktrace		= solvedAgent.SWBacktrace.ElapsedTicks;
-					result.MSBody				= solvedAgent.SWBody.ElapsedMilliseconds;
-					result.TicksBody			= solvedAgent.SWBody.ElapsedTicks;
-					result.MSClosedSet			= solvedAgent.SWClosedSet.ElapsedMilliseconds;
-					result.TicksClosedSet		= solvedAgent.SWClosedSet.ElapsedTicks;
-					result.MSFindMin			= solvedAgent.SWFindMin.ElapsedMilliseconds;
-					result.TicksFindMin			= solvedAgent.SWFindMin.ElapsedTicks;
-					result.MSNodes				= solvedAgent.SWNodes.ElapsedMilliseconds;
-					result.TicksNodes			= solvedAgent.SWNodes.ElapsedTicks;
-					result.MSOpenSet			= solvedAgent.SWOpenSet.ElapsedMilliseconds;
-					result.TicksOpenSet			= solvedAgent.SWOpenSet.ElapsedTicks;
-					result.MSSetup				= solvedAgent.SWSetup.ElapsedMilliseconds;
-					result.TicksSetup			= solvedAgent.SWSetup.ElapsedTicks;
-					result.MSTotal				= solvedAgent.SWTotal.ElapsedMilliseconds;
-					result.TicksTotal			= solvedAgent.SWTotal.ElapsedTicks;
+					result.MaxClosedSetCount	= benchmark.MaxClosedSetCount;
+					result.MaxOpenSetCount		= benchmark.MaxOpenSetCount;
+					result.NodesConsideredCount	= benchmark.NodesConsideredCount;
+					result.PathLength			= benchmark.PathLength;
+					result.PathString			= benchmark.PathString;
+					result.MSBacktrace			= benchmark.SWBacktrace.ElapsedMilliseconds;
+					result.TicksBacktrace		= benchmark.SWBacktrace.ElapsedTicks;
+					result.MSBody				= benchmark.SWBody.ElapsedMilliseconds;
+					result.TicksBody			= benchmark.SWBody.ElapsedTicks;
+					result.MSClosedSet			= benchmark.SWClosedSet.ElapsedMilliseconds;
+					result.TicksClosedSet		= benchmark.SWClosedSet.ElapsedTicks;
+					result.MSFindMin			= benchmark.SWFindMin.ElapsedMilliseconds;
+					result.TicksFindMin			= benchmark.SWFindMin.ElapsedTicks;
+					result.MSNodes				= benchmark.SWNodes.ElapsedMilliseconds;
+					result.TicksNodes			= benchmark.SWNodes.ElapsedTicks;
+					result.MSOpenSet			= benchmark.SWOpenSet.ElapsedMilliseconds;
+					result.TicksOpenSet			= benchmark.SWOpenSet.ElapsedTicks;
+					result.MSSetup				= benchmark.SWSetup.ElapsedMilliseconds;
+					result.TicksSetup			= benchmark.SWSetup.ElapsedTicks;
+					result.MSTotal				= benchmark.SWTotal.ElapsedMilliseconds;
+					result.TicksTotal			= benchmark.SWTotal.ElapsedTicks;
 
 					// Write results to the output file
 					File.AppendAllText( filename, "\n" + result, UTF8Encoding.UTF8 );

@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AStarTesting.NaiveAStar
+namespace AStarTesting.Navmesh
 {
-	public class NaiveAStarNode
+	public class AStarNode
 	{
 		///////////////////////////////////////////////////////////////////////////////////////////
 		#region Properties
@@ -14,11 +14,31 @@ namespace AStarTesting.NaiveAStar
 		/// <summary>
 		/// 
 		/// </summary>
-		NaiveAStarAgent mAgent;
-		public NaiveAStarAgent Agent 
+		IAStarAgent mAgent;
+		public IAStarAgent Agent 
 		{
 			get { return mAgent; }
 			set { mAgent = value; }
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		bool mBelongsToClosedSet;
+		public bool BelongsToClosedSet 
+		{
+			get { return mBelongsToClosedSet; }
+			set { mBelongsToClosedSet = value; }
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		bool mBelongsToOpenSet;
+		public bool BelongsToOpenSet 
+		{
+			get { return mBelongsToOpenSet; }
+			set { mBelongsToOpenSet = value; }
 		}
 		
 		/// <summary>
@@ -74,8 +94,8 @@ namespace AStarTesting.NaiveAStar
 		/// <summary>
 		/// 
 		/// </summary>
-		List<NaiveAStarNode> mNeighbors;
-		public List<NaiveAStarNode> Neighbors 
+		List<AStarNode> mNeighbors;
+		public List<AStarNode> Neighbors 
 		{
 			get { return mNeighbors; }
 			private set { mNeighbors = value; }
@@ -84,8 +104,8 @@ namespace AStarTesting.NaiveAStar
 		/// <summary>
 		/// 
 		/// </summary>
-		NaiveAStarNode mParent;
-		public NaiveAStarNode Parent 
+		AStarNode mParent;
+		public AStarNode Parent 
 		{
 			get { return mParent; }
 			set { mParent = value; }
@@ -117,12 +137,12 @@ namespace AStarTesting.NaiveAStar
 		///////////////////////////////////////////////////////////////////////////////////////////
 		#region Methods
 
-		public void AddNeighbor( NaiveAStarNode node )
+		public void AddNeighbor( AStarNode node )
 		{
 			Neighbors.Add( node );
 		}
 
-		public void RemoveNeighbor( NaiveAStarNode node )
+		public void RemoveNeighbor( AStarNode node )
 		{
 			Neighbors.Remove( node );
 		}
@@ -131,7 +151,7 @@ namespace AStarTesting.NaiveAStar
 		{
 			StringBuilder result = new StringBuilder( "Node >> Column: " + Column + ", Row: " + Row + ", Traversable: " + Traversable + ", Neighbors: " );
 		
-			foreach ( NaiveAStarNode neighbor in Neighbors )
+			foreach ( AStarNode neighbor in Neighbors )
 				result.Append( "[ " + neighbor.Column + " : " + neighbor.Row + " ],  " );
 		
 			return result.ToString();
@@ -143,13 +163,13 @@ namespace AStarTesting.NaiveAStar
 		///////////////////////////////////////////////////////////////////////////////////////////
 		#region ctor
 
-		public NaiveAStarNode( int column, int row, bool traversable = true, float moveCost = 1 )
+		public AStarNode( int column, int row, bool traversable = true, float moveCost = 1 )
 		{
 			Column = column;
 			Row = row;
 			Traversable = traversable;
 			MoveCost = moveCost;
-			Neighbors = new List<NaiveAStarNode>();
+			Neighbors = new List<AStarNode>();
 		}
 
 		#endregion

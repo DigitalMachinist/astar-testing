@@ -5,13 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AStarTesting
+namespace AStarTesting.Testbed
 {
 	public interface IAStarBenchmark
 	{
-		///////////////////////////////////////////////////////////////////////////////////////////
-		#region Property Declarations
-
 		/// <summary>
 		/// The maximum size that the closed set reached during the last Solve() operation.
 		/// </summary>
@@ -31,6 +28,11 @@ namespace AStarTesting
 		/// The length of the path from the start node to the goal node computer by the last Solve() operation.
 		/// </summary>
 		long PathLength { get; set; }
+
+		/// <summary>
+		/// The string-formatted path chosen by the agent from the StartNode to the GoalNode.
+		/// </summary>
+		string PathString { get; }
 
 		/// <summary>
 		/// The stopwatch to measure the time cost of performing the backtrace to produce the linear path from start node to goal node.
@@ -71,18 +73,5 @@ namespace AStarTesting
 		/// The stopwatch to measure the time cost of any operations before the bosy of the Solve() operation.
 		/// </summary>
 		Stopwatch SWSetup { get; set; }
-
-		#endregion
-
-
-		///////////////////////////////////////////////////////////////////////////////////////////
-		#region Method Declarations
-
-		/// <summary>
-		/// Solves for the path from the start node to the goal node.
-		/// </summary>
-		void Solve();
-
-		#endregion
 	}
 }

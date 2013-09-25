@@ -1,17 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using AStarTesting.Navmesh;
 
-namespace AStarTesting.NaiveAStar
+namespace AStarTesting.Heuristics
 {
-	public class ManhattanAStarHeuristic : INaiveAStarHeuristic
+	public class ManhattanAStarHeuristic : IAStarHeuristic
 	{
 		///////////////////////////////////////////////////////////////////////////////////////////
 		#region Interface Methods
 		
-		public float GetEstimatedCost( NaiveAStarNode currentNode, NaiveAStarNode goalNode )
+		public float GetEstimatedCost( AStarNode currentNode, AStarNode goalNode )
 		{
 			return Math.Abs( goalNode.Column - currentNode.Column ) + Math.Abs( goalNode.Row - currentNode.Row );
 		}
