@@ -6,12 +6,19 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
-using AStarTesting.NaiveAStar;
 using AStarTesting.Navmesh;
 using AStarTesting.Heuristics;
+using AStarTesting.NaiveAStar;
+using AStarTesting.OptimizedAStar;
 
 namespace AStarTesting.Testbed
 {
+	public enum AgentType
+	{
+		Naive,			// Jeff's first implementation of A*, ignoring any optimizations
+		Optimized		// Jeff's second A* implementation, taking advantage of optimizations
+	}
+
 	public class AStarTestbed
 	{
 		///////////////////////////////////////////////////////////////////////////////////////////
@@ -23,6 +30,7 @@ namespace AStarTesting.Testbed
 		GridType	gridType;
 		int			columns,				rows;
 		int			agents,					iterations;
+		AgentType	agentType;
 		float		minSimplexAmplitude,	maxSimplexAmplitude;
 		float		minSimplexScale,		maxSimplexScale;
 		float		minSimplexXOffset,		maxSimplexXOffset;
@@ -37,8 +45,8 @@ namespace AStarTesting.Testbed
 			///////////////////////////////////////////////////////////////////////////////////////
 			#region Setup heuristics map
 
-			heuristicsMap = new Dictionary<string,IAStarHeuristic>();
-			heuristicsMap.Add( "Dijakstra", new DijakstraAStarHeuristic() );
+			heuristicsMap = new Dictionary<string, IAStarHeuristic>();
+			heuristicsMap.Add( "Dijkstra", new DijkstraAStarHeuristic() );
 			heuristicsMap.Add( "Manhattan", new ManhattanAStarHeuristic() );
 			heuristicsMap.Add( "StraightLine", new StraightLineAStarHeuristic() );
 
@@ -57,6 +65,15 @@ namespace AStarTesting.Testbed
 				case "SquareGrid":		gridType = GridType.SquareGrid;				break;
 				case "SquareDiagonal":	gridType = GridType.SquareDiagonal;			break;
 				case "HexGrid":			gridType = GridType.HexGrid;				break;
+				default:				throw new ArgumentOutOfRangeException();
+			}
+
+			// Read in the agent type
+			string agentTypeString = xdoc.Descendants( "agentType" ).First().Value;
+			switch ( agentTypeString )
+			{
+				case "Naive":			agentType = AgentType.Naive;				break;
+				case "Optimized":		agentType = AgentType.Optimized;			break;
 				default:				throw new ArgumentOutOfRangeException();
 			}
 
@@ -90,6 +107,7 @@ namespace AStarTesting.Testbed
 			Console.WriteLine( "rows:\t\t\t" + rows );
 			Console.WriteLine( "agents:\t\t\t" + agents );
 			Console.WriteLine( "iterations:\t\t" + iterations );
+			Console.WriteLine( "agentType:\t\t" + agentType.ToString() );
 			Console.WriteLine( "minSimplexAmplitude:\t" + minSimplexAmplitude );
 			Console.WriteLine( "maxSimplexAmplitude:\t" + maxSimplexAmplitude );
 			Console.WriteLine( "minSimplexScale:\t" + minSimplexScale );
@@ -133,6 +151,7 @@ namespace AStarTesting.Testbed
 				"Grid Type",
 				"Navmesh Columns",
 				"Navmesh Rows",
+				"Agent Type", 
 				"Start Node",
 				"Goal Node",
 				"Noise Amplitude",
@@ -200,7 +219,12 @@ namespace AStarTesting.Testbed
 				float coeffCostFromStart = (float)( minCoeffCostFromStart + random.NextDouble() * ( maxCoeffCostFromStart - minCoeffCostFromStart ) );
 				float coeffCostToGoal = (float)( minCoeffCostToGoal + random.NextDouble() * ( maxCoeffCostToGoal - minCoeffCostToGoal ) );
 
-				NaiveAStarAgent agent = new NaiveAStarAgent( heuristic, coeffCostFromStart, coeffCostToGoal, keypressAdvance );
+				IAStarAgent agent = null;
+				switch ( agentType )
+				{
+					case AgentType.Naive:		agent = new NaiveAStarAgent( heuristic, coeffCostFromStart, coeffCostToGoal, keypressAdvance );		break;
+					case AgentType.Optimized:	agent = new OptimizedAStarAgent( heuristic, coeffCostFromStart, coeffCostToGoal, keypressAdvance );	break;
+				}
 
 				int xStart = random.Next( 0, navmesh.Columns );
 				int yStart = random.Next( 0, navmesh.Rows );
@@ -272,6 +296,7 @@ namespace AStarTesting.Testbed
 					result.NavmeshGridType		= navmesh.GridType.ToString();
 					result.NavmeshColumns		= navmesh.Columns;
 					result.NavmeshRows			= navmesh.Rows;
+					result.AgentType			= solvedAgent.GetType().Name;
 					result.XStart				= solvedAgent.StartNode.Column;
 					result.YStart				= solvedAgent.StartNode.Row;
 					result.XGoal				= solvedAgent.GoalNode.Column;

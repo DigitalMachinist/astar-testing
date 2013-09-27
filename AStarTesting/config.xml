@@ -2,16 +2,17 @@
 <config>
   <keypressAdvance>false</keypressAdvance>
   <randomSeed>12345</randomSeed>
-  <gridType>HexGrid</gridType><!-- "SquareGrid", "SquareDiagonal" or "HexGrid" -->
-  <columns>20</columns>
-  <rows>20</rows>
-  <agents>1</agents>
-  <iterations>10</iterations>
-  <heuristics><!-- "Manhattan" or "StraightLine" currently -->
-    <heuristic>StraightLine</heuristic>
+  <gridType>HexGrid</gridType><!-- SquareGrid, SquareDiagonal or HexGrid -->
+  <columns>100</columns>
+  <rows>100</rows>
+  <agentType>Optimized</agentType><!-- Naive or Optimized -->
+  <agents>100</agents>
+  <iterations>100</iterations>
+  <heuristics><!-- Dijkstra, Manhattan or StraightLine -->
+    <heuristic>Dijkstra</heuristic>
   </heuristics>
-  <minSimplexAmplitude>1.0</minSimplexAmplitude>
-  <maxSimplexAmplitude>1.0</maxSimplexAmplitude>
+  <minSimplexAmplitude>5.0</minSimplexAmplitude>
+  <maxSimplexAmplitude>5.0</maxSimplexAmplitude>
   <minSimplexScale>0.1</minSimplexScale>
   <maxSimplexScale>0.1</maxSimplexScale>
   <minSimplexXOffset>0.0</minSimplexXOffset>

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace AStarTesting.Navmesh
 {
-	public class AStarNode
+	public class AStarNode : IComparable<AStarNode>
 	{
 		///////////////////////////////////////////////////////////////////////////////////////////
 		#region Properties
@@ -155,6 +155,12 @@ namespace AStarTesting.Navmesh
 				result.Append( "[ " + neighbor.Column + " : " + neighbor.Row + " ],  " );
 		
 			return result.ToString();
+		}
+
+		public int CompareTo( AStarNode other )
+		{
+			if ( other == null ) return 1;
+			return CostTotal.CompareTo( other.CostTotal );
 		}
 
 		#endregion

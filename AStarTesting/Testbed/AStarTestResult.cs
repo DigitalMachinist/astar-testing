@@ -14,6 +14,7 @@ namespace AStarTesting.Testbed
 		public string	NavmeshGridType;
 		public int		NavmeshColumns;
 		public int		NavmeshRows;
+		public string	AgentType;
 		public int		XStart;
 		public int		YStart;
 		public int		XGoal;
@@ -52,7 +53,7 @@ namespace AStarTesting.Testbed
 		public override string ToString()
 		{
 			return String.Join( ",", 
-				KeypressAdvance, RandomSeed, NavmeshGridType, NavmeshColumns, NavmeshRows, 
+				KeypressAdvance, RandomSeed, NavmeshGridType, NavmeshColumns, NavmeshRows, AgentType, 
 				"[ " + XStart + " : " + YStart + " ]", "[ " + XGoal + " : " + YGoal + " ]",
 				SimplexAmplitude, SimplexScale, "[ " + SimplexXOffset + " : " + SimplexYOffset + " ]", 
 				Heuristic, CoeffCostFromStart, CoeffCostToGoal,

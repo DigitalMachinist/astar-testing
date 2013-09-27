@@ -325,7 +325,7 @@ namespace AStarTesting.NaiveAStar
 			SWClosedSet.Start();
 
 			// Closed list of nodes to not be reconsidered
-			mClosedSet.Add( currentNode );
+			ClosedSet.Add( currentNode );
 
 			SWClosedSet.Stop();
 		
@@ -337,7 +337,7 @@ namespace AStarTesting.NaiveAStar
 					SWOpenSet.Start();
 
 					// Add the node to the open set
-					mOpenSet.Add( node );
+					OpenSet.Add( node );
 
 					SWOpenSet.Stop();
 					SWNodes.Start();
@@ -349,6 +349,15 @@ namespace AStarTesting.NaiveAStar
 					node.CostTotal = node.CostFromStart + node.CostToGoal;
 
 					SWNodes.Stop();
+
+					if ( KeypressAdvance )
+					{
+						AStarNode minNode = OpenSet.Aggregate( 
+							( curmin, x ) => 
+							( ( curmin == null || ( x.CostTotal < curmin.CostTotal ) ) ? x : curmin ) 
+						);
+						Console.WriteLine( "This node: " + node.CostTotal + ", Minimum: " + minNode.CostTotal );
+					}
 				}
 
 				NodesConsideredCount++;
@@ -439,6 +448,15 @@ namespace AStarTesting.NaiveAStar
 
 							SWNodes.Stop();
 							NodesConsideredCount++;
+							
+							if ( KeypressAdvance )
+							{
+								AStarNode minNode = OpenSet.Aggregate( 
+									( curmin, x ) => 
+									( ( curmin == null || ( x.CostTotal < curmin.CostTotal ) ) ? x : curmin ) 
+								);
+								Console.WriteLine( "This node: " + node.CostTotal + ", Minimum: " + minNode.CostTotal );
+							}
 						}
 						else
 						{
@@ -454,6 +472,15 @@ namespace AStarTesting.NaiveAStar
 								node.CostTotal = node.CostFromStart + node.CostToGoal;
 
 								SWNodes.Stop();
+
+								if ( KeypressAdvance )
+								{
+									AStarNode minNode = OpenSet.Aggregate( 
+										( curmin, x ) => 
+										( ( curmin == null || ( x.CostTotal < curmin.CostTotal ) ) ? x : curmin ) 
+									);
+									Console.WriteLine( "This node: " + node.CostTotal + ", Minimum: " + minNode.CostTotal );
+								}
 							}
 						}
 					}
@@ -479,7 +506,8 @@ namespace AStarTesting.NaiveAStar
 
 		public override string ToString()
 		{
-			return "Agent >> Heuristic: " + Heuristic.GetType().Name + 
+			return "Agent >> Type: " + GetType().Name + 
+				", Heuristic: " + Heuristic.GetType().Name + 
 				", Start: [ " + StartNode.Column + " : " + StartNode.Row + 
 				" ], Goal: [ " + GoalNode.Column + " : " + GoalNode.Row + " ]";
 		}

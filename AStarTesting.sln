@@ -5,6 +5,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AStarTesting", "AStarTestin
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimplexNoise", "SimplexNoise\SimplexNoise.csproj", "{733B3143-822A-41B7-A021-9BF7AE84C2D5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BinaryHeap", "BinaryHeap\BinaryHeap.csproj", "{57AD0A34-2A06-4BE7-8811-4CA4441EEF57}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -19,6 +21,10 @@ Global
 		{733B3143-822A-41B7-A021-9BF7AE84C2D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{733B3143-822A-41B7-A021-9BF7AE84C2D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{733B3143-822A-41B7-A021-9BF7AE84C2D5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{57AD0A34-2A06-4BE7-8811-4CA4441EEF57}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{57AD0A34-2A06-4BE7-8811-4CA4441EEF57}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{57AD0A34-2A06-4BE7-8811-4CA4441EEF57}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{57AD0A34-2A06-4BE7-8811-4CA4441EEF57}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

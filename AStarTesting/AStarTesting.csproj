@@ -41,12 +41,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="OptimizedAStar\OptimizedAStarAgent.cs" />
     <Compile Include="Testbed\AStarTestbed.cs" />
     <Compile Include="Testbed\AStarTestResult.cs" />
-    <Compile Include="BinaryHeap\BinaryHeap.cs" />
     <Compile Include="Navmesh\IAStarAgent.cs" />
     <Compile Include="Testbed\IAStarBenchmark.cs" />
-    <Compile Include="Heuristics\DijakstraAStarHeuristic.cs" />
+    <Compile Include="Heuristics\DijkstraAStarHeuristic.cs" />
     <Compile Include="Heuristics\StraightLineAStarHeuristic.cs" />
     <Compile Include="NaiveAStar\NaiveAStarAgent.cs" />
     <Compile Include="Heuristics\ManhattanAStarHeuristic.cs" />
@@ -60,6 +60,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\BinaryHeap\BinaryHeap.csproj">
+      <Project>{57ad0a34-2a06-4be7-8811-4ca4441eef57}</Project>
+      <Name>BinaryHeap</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SimplexNoise\SimplexNoise.csproj">
       <Project>{733b3143-822a-41b7-a021-9bf7ae84c2d5}</Project>
       <Name>SimplexNoise</Name>
@@ -70,9 +74,7 @@
       <SubType>Designer</SubType>
     </Content>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="OptimizedAStar\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>copy $(ProjectDir)\config.xml $(ProjectDir)\$(OutDir)\config.xml</PreBuildEvent>
